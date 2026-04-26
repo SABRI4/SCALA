@@ -10,7 +10,6 @@ object CarrefourMain {
     
     // On crée 12 voies
     for (i <- 1 to 12) {
-      // Distribution : Voie 1->Z1, Voie 2->Z2, Voie 3->Z3, Voie 4->Z4, Voie 5->Z1...
       val zoneInitiale = zones((i - 1) % 4)
       context.spawn(CapteurVoie(i, zoneInitiale, hub), s"CapteurVoie_$i")
     }

@@ -4,52 +4,46 @@ import akka.actor.typed.scaladsl.Behaviors
 object HubCentral {
 
   sealed trait HubCommand
-  case class DemandeAcces(voieId: Int, zoneCible: String, nbVehicules: Int, replyTo: ActorRef[CapteurVoie.Command]) extends HubCommand
-  case class FinPassage(voieId: Int, zoneCible: String, nbVehicules: Int) extends HubCommand
-  case class TransfertVehicule(zoneSuivante: String) extends HubCommand
+  case class DemandeTrajet(voieId: Int, trajet: List[String], nbVehicules: Int, replyTo: ActorRef[CapteurVoie.Command]) extends HubCommand
+  case class AvancerSequence(voieId: Int, zoneQuittee: String, zoneEntree: String, replyTo: ActorRef[CapteurVoie.Command]) extends HubCommand
+  case class FinPassageTotal(voieId: Int, derniereZone: String, nbVehicules: Int) extends HubCommand
 
   case class EtatCarrefour(
-    occupations: Map[String, Boolean],
-    filesAttente: Map[Int, Int],
-    registreCapteurs: Map[String, ActorRef[CapteurVoie.Command]] // Pour savoir où envoyer les transferts
+    reservations: Map[String, Int], 
+    filesAttente: Map[Int, Int]
   )
 
   def apply(): Behavior[HubCommand] = {
     val etatInitial = EtatCarrefour(
-      Map("NE" -> false, "NO" -> false, "SE" -> false, "SO" -> false),
-      (1 to 16).map(_ -> 0).toMap,
-      Map.empty
+      reservations = Map("1" -> 0, "2" -> 0, "3" -> 0, "4" -> 0), 
+      filesAttente = (1 to 12).map(_ -> 0).toMap
     )
     gestionnaire(etatInitial)
   }
 
   private def gestionnaire(etat: EtatCarrefour): Behavior[HubCommand] = Behaviors.receive { (context, message) =>
     val nouvelEtat = message match {
-      case DemandeAcces(id, zone, nb, replyTo) =>
-        val estOccupee = etat.occupations.getOrElse(zone, true)
-        val filesMaj = etat.filesAttente + (id -> nb)
-        // On enregistre quel capteur gère quelle zone (le dernier demandeur gagne)
-        val registreMaj = etat.registreCapteurs + (zone -> replyTo)
+      case DemandeTrajet(id, trajet, nb, replyTo) =>
+        val zonesLibres = trajet.forall(z => etat.reservations.getOrElse(z, 0) == 0)
+        val filesMaj = etat.filesAttente + (id -> nb) // Mise à jour affichage
 
-        if (!estOccupee) {
+        if (zonesLibres) {
+          val nouvellesRes = etat.reservations ++ trajet.map(_ -> id)
           replyTo ! CapteurVoie.FeuPasseAuVert
-          etat.copy(occupations = etat.occupations + (zone -> true), filesAttente = filesMaj, registreCapteurs = registreMaj)
+          etat.copy(reservations = nouvellesRes, filesAttente = filesMaj)
         } else {
-          etat.copy(filesAttente = filesMaj, registreCapteurs = registreMaj)
+          etat.copy(filesAttente = filesMaj)
         }
 
-      case FinPassage(id, zone, nb) =>
-        etat.copy(
-          occupations = etat.occupations + (zone -> false),
-          filesAttente = etat.filesAttente + (id -> nb)
-        )
+      case AvancerSequence(id, quittee, entree, replyTo) =>
+        val nouvellesRes = etat.reservations + (quittee -> 0)
+        replyTo ! CapteurVoie.FeuPasseAuVert
+        etat.copy(reservations = nouvellesRes)
 
-      case TransfertVehicule(zoneSuivante) =>
-        // On trouve le capteur qui gère la zone suivante et on lui envoie une voiture
-        etat.registreCapteurs.get(zoneSuivante).foreach { capteurRef =>
-          capteurRef ! CapteurVoie.ArriveeVehicule
-        }
-        etat
+      case FinPassageTotal(id, derniere, nb) =>
+        val nouvellesRes = etat.reservations + (derniere -> 0)
+        val filesMaj = etat.filesAttente + (id -> nb) // Mise à jour affichage
+        etat.copy(reservations = nouvellesRes, filesAttente = filesMaj)
     }
 
     afficherCarrefour(nouvelEtat)
@@ -62,10 +56,11 @@ object HubCentral {
     println("       MONITORING CARREFOUR CRITIQUE 2026           ")
     println("=====================================================")
     
-    print("ZONES : ")
-    List("NE", "NO", "SE", "SO").foreach { z =>
-      val status = if (etat.occupations.getOrElse(z, false)) "[OCCUPE]" else "[LIBRE ]"
-      print(s"$z: $status   ")
+    print("ZONES (Verrous) : ")
+    List("1", "2", "3", "4").foreach { z =>
+      val verrou = etat.reservations.getOrElse(z, 0)
+      val status = if (verrou != 0) f"[VOIE $verrou%02d]" else "[LIBRE  ]"
+      print(s"Z$z: $status  ")
     }
     println("\n" + "-" * 53)
 
@@ -76,6 +71,6 @@ object HubCentral {
       if (i % 4 == 0) println()
     }
     println("=====================================================")
-    println(">> Appuyez sur Ctrl+C pour arrêter")
+    println(">> Stratégie : Pré-réservation complète du trajet")
   }
 }
