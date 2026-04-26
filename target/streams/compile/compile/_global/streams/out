@@ -1,4 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:77:4: '}' expected but eof found.[0m
-[0m[[0m[31merror[0m] [0m[0m  }[0m
-[0m[[0m[31merror[0m] [0m[0m   ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\Main.scala:42:1: Missing closing brace `}` assumed here[0m
+[0m[[0m[31merror[0m] [0m[0m}[0m
+[0m[[0m[31merror[0m] [0m[0m^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m

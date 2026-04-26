@@ -1,37 +1,32 @@
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorSystem, Behavior}
-import scala.concurrent.duration._
 
 object CarrefourMain {
-  // Collection d'élements pour faciliter la création des capteurs de voie
-  val zones = Vector("NE", "NO", "SE", "SO")
+  // On utilise tes zones 1, 2, 3, 4
+  val zones = Vector("1", "2", "3", "4")
 
   def apply(): Behavior[Unit] = Behaviors.setup { context =>
     val hub = context.spawn(HubCentral(), "HubCentral")
-    context.log.info("Système de contrôle du carrefour démarré.")
-
+    
+    // On crée 12 voies
     for (i <- 1 to 12) {
-      val zoneCible = zones((i - 1) % 4)
-      context.spawn(CapteurVoie(i, zoneCible, hub), s"CapteurVoie_$i")
+      // Distribution : Voie 1->Z1, Voie 2->Z2, Voie 3->Z3, Voie 4->Z4, Voie 5->Z1...
+      val zoneInitiale = zones((i - 1) % 4)
+      context.spawn(CapteurVoie(i, zoneInitiale, hub), s"CapteurVoie_$i")
     }
-
-    // On ne fait rien, mais on reste vivant
-    Behaviors.ignore 
+    Behaviors.ignore
   }
 
   def main(args: Array[String]): Unit = {
-
-    // On crée le système
     val system: ActorSystem[Unit] = ActorSystem(CarrefourMain(), "SimulationCarrefour2026")
     
-    println("======= SIMULATION LANCÉE =======")
+    println("======= 🚦 SIMULATION LANCÉE =======")
+    println("Quadrants : 2 (NE) -> 1 (NO) -> 3 (SO) -> 4 (SE)")
     
     try {
-      // On attend indéfiniment (ou jusqu'au Ctrl+C)
       Thread.currentThread().join() 
     } catch {
-      case _: InterruptedException => 
-        system.terminate()
+      case _: InterruptedException => system.terminate()
     }
   }
 }
