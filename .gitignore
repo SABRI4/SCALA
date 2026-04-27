@@ -1,0 +1,14 @@
+# Fichiers compilés par sbt
+target/
+project/target/
+project/project/
+
+# Caches de VS Code et Metals (ton IDE)
+.metals/
+.bloop/
+.bsp/
+.vscode/
+
+# Fichiers systèmes divers (Windows/Mac)
+.DS_Store
+Thumbs.db
