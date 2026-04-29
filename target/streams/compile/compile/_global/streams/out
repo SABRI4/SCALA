@@ -1,27 +1,5 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:22:26: value DemandeAcces is not a member of object HubCentral[0m
-[0m[[0m[31merror[0m] [0m[0m        hub ! HubCentral.DemandeAcces(voieId, zoneCible, fileInitiale.size, context.self)[0m
-[0m[[0m[31merror[0m] [0m[0m                         ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:33:26: value DemandeAcces is not a member of object HubCentral[0m
-[0m[[0m[31merror[0m] [0m[0m        hub ! HubCentral.DemandeAcces(voieId, zoneCible, nouvelleFile.size, context.self)[0m
-[0m[[0m[31merror[0m] [0m[0m                         ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:41:28: value FinPassage is not a member of object HubCentral[0m
-[0m[[0m[31merror[0m] [0m[0m          hub ! HubCentral.FinPassage(voieId, zoneCible, 0)[0m
-[0m[[0m[31merror[0m] [0m[0m                           ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:59:30: value AvancerSéquence is not a member of object HubCentral[0m
-[0m[[0m[31merror[0m] [0m[0mdid you mean AvancerSequence?[0m
-[0m[[0m[31merror[0m] [0m[0m            hub ! HubCentral.AvancerSéquence(voieId, zoneFinie, trajetApresZone.head, context.self)[0m
-[0m[[0m[31merror[0m] [0m[0m                             ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:60:24: not enough arguments for method gestionFile: (voieId: Int, zoneCible: String, file: List[String], hub: akka.actor.typed.ActorRef[HubCentral.HubCommand], timers: akka.actor.typed.scaladsl.TimerScheduler[CapteurVoie.Command], context: akka.actor.typed.scaladsl.ActorContext[CapteurVoie.Command]): akka.actor.typed.Behavior[CapteurVoie.Command].[0m
-[0m[[0m[31merror[0m] [0m[0mUnspecified value parameter context.[0m
-[0m[[0m[31merror[0m] [0m[0m            gestionFile(voieId, trajetApresZone :: file.tail, hub, timers, context)[0m
-[0m[[0m[31merror[0m] [0m[0m                       ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:63:54: type mismatch;[0m
-[0m[[0m[31merror[0m] [0m[0m found   : Char[0m
-[0m[[0m[31merror[0m] [0m[0m required: String[0m
-[0m[[0m[31merror[0m] [0m[0m            hub ! HubCentral.FinPassageTotal(voieId, zoneFinie)[0m
-[0m[[0m[31merror[0m] [0m[0m                                                     ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:64:24: not enough arguments for method gestionFile: (voieId: Int, zoneCible: String, file: List[String], hub: akka.actor.typed.ActorRef[HubCentral.HubCommand], timers: akka.actor.typed.scaladsl.TimerScheduler[CapteurVoie.Command], context: akka.actor.typed.scaladsl.ActorContext[CapteurVoie.Command]): akka.actor.typed.Behavior[CapteurVoie.Command].[0m
-[0m[[0m[31merror[0m] [0m[0mUnspecified value parameter context.[0m
-[0m[[0m[31merror[0m] [0m[0m            gestionFile(voieId, file.tail, hub, timers, context)[0m
-[0m[[0m[31merror[0m] [0m[0m                       ^[0m
-[0m[[0m[31merror[0m] [0m[0m7 errors found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\Main.scala:14:32: CapteurVoie.type does not take parameters[0m
+[0m[[0m[31merror[0m] [0m[0mError occurred in an application involving default arguments.[0m
+[0m[[0m[31merror[0m] [0m[0m      context.spawn(CapteurVoie(i, zoneInitiale, hub), s"CapteurVoie_$i")[0m
+[0m[[0m[31merror[0m] [0m[0m                               ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m
