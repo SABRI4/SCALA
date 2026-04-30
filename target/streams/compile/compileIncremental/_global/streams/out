@@ -1,115 +1,47 @@
 [0m[[0m[0mdebug[0m] [0m[0m[zinc] IncrementalCompile -----------[0m
 [0m[[0m[0mdebug[0m] [0m[0mIncrementalCompile.incrementalCompile[0m
-[0m[[0m[0mdebug[0m] [0m[0mprevious = Stamps for: 20 products, 4 sources, 2 libraries[0m
+[0m[[0m[0mdebug[0m] [0m[0mprevious = Stamps for: 21 products, 4 sources, 2 libraries[0m
 [0m[[0m[0mdebug[0m] [0m[0mcurrent source = Set(${BASE}/src/main/scala/AnalyseurFormel.scala, ${BASE}/src/main/scala/CapteurVoie.scala, ${BASE}/src/main/scala/HubCentral.scala, ${BASE}/src/main/scala/Main.scala)[0m
-[0m[[0m[0mdebug[0m] [0m[0m> initialChanges = InitialChanges(Changes(added = Set(), removed = Set(), changed = Set(${BASE}/src/main/scala/CapteurVoie.scala), unmodified = ...),Set(),Set(),API Changes: Set())[0m
+[0m[[0m[0mdebug[0m] [0m[0m> initialChanges = InitialChanges(Changes(added = Set(), removed = Set(), changed = Set(${BASE}/src/main/scala/CapteurVoie.scala, ${BASE}/src/main/scala/HubCentral.scala), unmodified = ...),Set(),Set(),API Changes: Set())[0m
 [0m[[0m[0mdebug[0m] [0m[0m[0m
 [0m[[0m[0mdebug[0m] [0m[0mInitial source changes:[0m
 [0m[[0m[0mdebug[0m] [0m[0m	removed: Set()[0m
 [0m[[0m[0mdebug[0m] [0m[0m	added: Set()[0m
-[0m[[0m[0mdebug[0m] [0m[0m	modified: Set(${BASE}/src/main/scala/CapteurVoie.scala)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	modified: Set(${BASE}/src/main/scala/CapteurVoie.scala, ${BASE}/src/main/scala/HubCentral.scala)[0m
 [0m[[0m[0mdebug[0m] [0m[0mInvalidated products: Set()[0m
 [0m[[0m[0mdebug[0m] [0m[0mExternal API changes: API Changes: Set()[0m
 [0m[[0m[0mdebug[0m] [0m[0mModified binary dependencies: Set()[0m
-[0m[[0m[0mdebug[0m] [0m[0mInitial directly invalidated classes: Set(CapteurVoie.GenererFlux, CapteurVoie.ArriveeVehicule, CapteurVoie.FeuPasseAuVert, CapteurVoie.Command, CapteurVoie, CapteurVoie.TraiterProchainVehicule)[0m
+[0m[[0m[0mdebug[0m] [0m[0mInitial directly invalidated classes: Set(CapteurVoie.GenererFlux, HubCentral.HubCommand, HubCentral.DemandeTrajet, CapteurVoie.ArriveeVehicule, CapteurVoie.FeuPasseAuVert, HubCentral.EtatCarrefour, HubCentral.FinPassageTotal, HubCentral.AvancerSequence, CapteurVoie.FinChronoVert, CapteurVoie.Command, HubCentral, CapteurVoie, CapteurVoie.TraiterProchainVehicule)[0m
 [0m[[0m[0mdebug[0m] [0m[0mSources indirectly invalidated by:[0m
 [0m[[0m[0mdebug[0m] [0m[0m	product: Set()[0m
 [0m[[0m[0mdebug[0m] [0m[0m	binary dep: Set()[0m
 [0m[[0m[0mdebug[0m] [0m[0m	external source: Set()[0m
-[0m[[0m[0mdebug[0m] [0m[0mAll initially invalidated classes: Set(CapteurVoie.GenererFlux, CapteurVoie.ArriveeVehicule, CapteurVoie.FeuPasseAuVert, CapteurVoie.Command, CapteurVoie, CapteurVoie.TraiterProchainVehicule)[0m
-[0m[[0m[0mdebug[0m] [0m[0mAll initially invalidated sources:Set(${BASE}/src/main/scala/CapteurVoie.scala)[0m
-[0m[[0m[0mdebug[0m] [0m[0mInitial set of included nodes: CapteurVoie.GenererFlux, CapteurVoie.ArriveeVehicule, CapteurVoie.FeuPasseAuVert, CapteurVoie.Command, CapteurVoie, CapteurVoie.TraiterProchainVehicule[0m
+[0m[[0m[0mdebug[0m] [0m[0mAll initially invalidated classes: Set(CapteurVoie.GenererFlux, HubCentral.HubCommand, HubCentral.DemandeTrajet, CapteurVoie.ArriveeVehicule, CapteurVoie.FeuPasseAuVert, HubCentral.EtatCarrefour, HubCentral.FinPassageTotal, HubCentral.AvancerSequence, CapteurVoie.FinChronoVert, CapteurVoie.Command, HubCentral, CapteurVoie, CapteurVoie.TraiterProchainVehicule)[0m
+[0m[[0m[0mdebug[0m] [0m[0mAll initially invalidated sources:Set(${BASE}/src/main/scala/CapteurVoie.scala, ${BASE}/src/main/scala/HubCentral.scala)[0m
+[0m[[0m[0mdebug[0m] [0m[0mInitial set of included nodes: CapteurVoie.GenererFlux, HubCentral.HubCommand, HubCentral.DemandeTrajet, CapteurVoie.ArriveeVehicule, CapteurVoie.FeuPasseAuVert, HubCentral.EtatCarrefour, HubCentral.FinPassageTotal, HubCentral.AvancerSequence, CapteurVoie.FinChronoVert, CapteurVoie.Command, HubCentral, CapteurVoie, CapteurVoie.TraiterProchainVehicule[0m
+[0m[[0m[0mdebug[0m] [0m[0mIncluding HubCentral.DemandeTrajet by HubCentral.HubCommand[0m
+[0m[[0m[0mdebug[0m] [0m[0mIncluding HubCentral.FinPassageTotal by HubCentral.HubCommand[0m
+[0m[[0m[0mdebug[0m] [0m[0mIncluding HubCentral.AvancerSequence by HubCentral.HubCommand[0m
 [0m[[0m[0mdebug[0m] [0m[0mIncluding CapteurVoie.TraiterProchainVehicule by CapteurVoie.Command[0m
 [0m[[0m[0mdebug[0m] [0m[0mcompilation cycle 1[0m
-[0m[[0m[0minfo[0m] [0m[0mcompiling 1 Scala source to C:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\target\scala-2.13\classes ...[0m
+[0m[[0m[0minfo[0m] [0m[0mcompiling 2 Scala sources to C:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\target\scala-2.13\classes ...[0m
 [0m[[0m[0mdebug[0m] [0m[0mReturning already retrieved and compiled bridge: C:\Users\youne\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\scala-lang\scala2-sbt-bridge\2.13.12\scala2-sbt-bridge-2.13.12.jar.[0m
-[0m[[0m[0mdebug[0m] [0m[0m[zinc] Running cached compiler 249c695d for Scala compiler version 2.13.12[0m
+[0m[[0m[0mdebug[0m] [0m[0m[zinc] Running cached compiler 578395b9 for Scala compiler version 2.13.12[0m
 [0m[[0m[0mdebug[0m] [0m[0m[zinc] The Scala compiler is invoked with:[0m
 [0m[[0m[0mdebug[0m] [0m[0m	-classpath[0m
 [0m[[0m[0mdebug[0m] [0m[0m	C:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\target\scala-2.13\classes;C:\Users\youne\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\scala-lang\scala-library\2.13.12\scala-library-2.13.12.jar;C:\Users\youne\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\com\typesafe\akka\akka-actor-typed_2.13\2.6.21\akka-actor-typed_2.13-2.6.21.jar;C:\Users\youne\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\com\typesafe\akka\akka-actor_2.13\2.6.21\akka-actor_2.13-2.6.21.jar;C:\Users\youne\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\com\typesafe\akka\akka-slf4j_2.13\2.6.21\akka-slf4j_2.13-2.6.21.jar;C:\Users\youne\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\slf4j\slf4j-api\1.7.36\slf4j-api-1.7.36.jar;C:\Users\youne\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\com\typesafe\config\1.4.2\config-1.4.2.jar;C:\Users\youne\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\scala-lang\modules\scala-java8-compat_2.13\1.0.0\scala-java8-compat_2.13-1.0.0.jar[0m
-[0m[[0m[0mdebug[0m] [0m[0mScala compilation took 0.2921277 s[0m
+[0m[[0m[0mdebug[0m] [0m[0mScala compilation took 3.1361308 s[0m
 [0m[[0m[0mdebug[0m] [0m[0mdone compiling[0m
-[0m[[0m[0mdebug[0m] [0m[0mInvalidating (transitively) by inheritance from CapteurVoie.FinChronoVert...[0m
-[0m[[0m[0mdebug[0m] [0m[0mInitial set of included nodes: CapteurVoie.FinChronoVert[0m
-[0m[[0m[0mdebug[0m] [0m[0mInvalidated by transitive inheritance dependency: Set(CapteurVoie.FinChronoVert)[0m
-[0m[[0m[0mdebug[0m] [0m[0mChange NamesChange(CapteurVoie.FinChronoVert,ModifiedNames(changes = UsedName(canEqual,[Default]), UsedName(eq,[Default]), UsedName(productPrefix,[Default]), UsedName(notify,[Default]), UsedName(asInstanceOf,[Default]), UsedName(equals,[Default]), UsedName(productIterator,[Default]), UsedName(productElement,[Default]), UsedName(!=,[Default]), UsedName(##,[Default]), UsedName(getClass,[Default]), UsedName(notifyAll,[Default]), UsedName(hashCode,[Default]), UsedName(productArity,[Default]), UsedName(synchronized,[Default]), UsedName(isInstanceOf,[Default]), UsedName(toString,[Default]), UsedName(clone,[Default]), UsedName($init$,[Default]), UsedName(wait,[Default]), UsedName(productElementName,[Default]), UsedName(ne,[Default]), UsedName(==,[Default]), UsedName(finalize,[Default]), UsedName(productElementNames,[Default]), UsedName(FinChronoVert,[Default]))) invalidates 1 classes due to The CapteurVoie.FinChronoVert has the following regular definitions changed:[0m
-[0m[[0m[0mdebug[0m] [0m[0m	UsedName(canEqual,[Default]), UsedName(eq,[Default]), UsedName(productPrefix,[Default]), UsedName(notify,[Default]), UsedName(asInstanceOf,[Default]), UsedName(equals,[Default]), UsedName(productIterator,[Default]), UsedName(productElement,[Default]), UsedName(!=,[Default]), UsedName(##,[Default]), UsedName(getClass,[Default]), UsedName(notifyAll,[Default]), UsedName(hashCode,[Default]), UsedName(productArity,[Default]), UsedName(synchronized,[Default]), UsedName(isInstanceOf,[Default]), UsedName(toString,[Default]), UsedName(clone,[Default]), UsedName($init$,[Default]), UsedName(wait,[Default]), UsedName(productElementName,[Default]), UsedName(ne,[Default]), UsedName(==,[Default]), UsedName(finalize,[Default]), UsedName(productElementNames,[Default]), UsedName(FinChronoVert,[Default]).[0m
-[0m[[0m[0mdebug[0m] [0m[0m  > by transitive inheritance: Set(CapteurVoie.FinChronoVert)[0m
-[0m[[0m[0mdebug[0m] [0m[0m  > [0m
-[0m[[0m[0mdebug[0m] [0m[0m  > [0m
-[0m[[0m[0mdebug[0m] [0m[0m  > [0m
-[0m[[0m[0mdebug[0m] [0m[0m        [0m
-[0m[[0m[0mdebug[0m] [0m[0mInvalidating (transitively) by inheritance from CapteurVoie.Command...[0m
-[0m[[0m[0mdebug[0m] [0m[0mInitial set of included nodes: CapteurVoie.Command[0m
-[0m[[0m[0mdebug[0m] [0m[0mIncluding CapteurVoie.GenererFlux by CapteurVoie.Command[0m
-[0m[[0m[0mdebug[0m] [0m[0mIncluding CapteurVoie.ArriveeVehicule by CapteurVoie.Command[0m
-[0m[[0m[0mdebug[0m] [0m[0mIncluding CapteurVoie.FeuPasseAuVert by CapteurVoie.Command[0m
-[0m[[0m[0mdebug[0m] [0m[0mIncluding CapteurVoie.FinChronoVert by CapteurVoie.Command[0m
-[0m[[0m[0mdebug[0m] [0m[0mIncluding CapteurVoie.TraiterProchainVehicule by CapteurVoie.Command[0m
-[0m[[0m[0mdebug[0m] [0m[0mInvalidated by transitive inheritance dependency: Set(CapteurVoie.GenererFlux, CapteurVoie.ArriveeVehicule, CapteurVoie.FeuPasseAuVert, CapteurVoie.FinChronoVert, CapteurVoie.Command, CapteurVoie.TraiterProchainVehicule)[0m
-[0m[[0m[0mdebug[0m] [0m[0mThe following modified names cause invalidation of HubCentral: [UsedName(Command,[Default])][0m
-[0m[[0m[0mdebug[0m] [0m[0mThe following modified names cause invalidation of HubCentral.AvancerSequence: [UsedName(Command,[Default])][0m
-[0m[[0m[0mdebug[0m] [0m[0mThe following modified names cause invalidation of HubCentral: [UsedName(Command,[Default])][0m
-[0m[[0m[0mdebug[0m] [0m[0mThe following modified names cause invalidation of HubCentral.DemandeTrajet: [UsedName(Command,[Default])][0m
-[0m[[0m[0mdebug[0m] [0m[0mThe following modified names cause invalidation of CarrefourMain: [UsedName(Command,[Default])][0m
-[0m[[0m[0mdebug[0m] [0m[0mChange NamesChange(CapteurVoie.Command,ModifiedNames(changes = UsedName(Command,[Default]))) invalidates 10 classes due to The CapteurVoie.Command has the following regular definitions changed:[0m
-[0m[[0m[0mdebug[0m] [0m[0m	UsedName(Command,[Default]).[0m
-[0m[[0m[0mdebug[0m] [0m[0m  > by transitive inheritance: Set(CapteurVoie.GenererFlux, CapteurVoie.ArriveeVehicule, CapteurVoie.FeuPasseAuVert, CapteurVoie.FinChronoVert, CapteurVoie.Command, CapteurVoie.TraiterProchainVehicule)[0m
-[0m[[0m[0mdebug[0m] [0m[0m  > [0m
-[0m[[0m[0mdebug[0m] [0m[0m  > by member reference: Set(HubCentral.DemandeTrajet, CarrefourMain, HubCentral.AvancerSequence, HubCentral)[0m
-[0m[[0m[0mdebug[0m] [0m[0m  > [0m
-[0m[[0m[0mdebug[0m] [0m[0m        [0m
-[0m[[0m[0mdebug[0m] [0m[0mInvalidating (transitively) by inheritance from CapteurVoie...[0m
-[0m[[0m[0mdebug[0m] [0m[0mInitial set of included nodes: CapteurVoie[0m
-[0m[[0m[0mdebug[0m] [0m[0mInvalidated by transitive inheritance dependency: Set(CapteurVoie)[0m
-[0m[[0m[0mdebug[0m] [0m[0mNone of the modified names appears in source file of HubCentral. This dependency is not being considered for invalidation.[0m
-[0m[[0m[0mdebug[0m] [0m[0mNone of the modified names appears in source file of HubCentral.AvancerSequence. This dependency is not being considered for invalidation.[0m
-[0m[[0m[0mdebug[0m] [0m[0mNone of the modified names appears in source file of HubCentral.DemandeTrajet. This dependency is not being considered for invalidation.[0m
-[0m[[0m[0mdebug[0m] [0m[0mNone of the modified names appears in source file of CarrefourMain. This dependency is not being considered for invalidation.[0m
-[0m[[0m[0mdebug[0m] [0m[0mChange NamesChange(CapteurVoie,ModifiedNames(changes = UsedName(FinChronoVert,[Default]))) invalidates 1 classes due to The CapteurVoie has the following regular definitions changed:[0m
-[0m[[0m[0mdebug[0m] [0m[0m	UsedName(FinChronoVert,[Default]).[0m
-[0m[[0m[0mdebug[0m] [0m[0m  > by transitive inheritance: Set(CapteurVoie)[0m
-[0m[[0m[0mdebug[0m] [0m[0m  > [0m
-[0m[[0m[0mdebug[0m] [0m[0m  > [0m
-[0m[[0m[0mdebug[0m] [0m[0m  > [0m
-[0m[[0m[0mdebug[0m] [0m[0m        [0m
 [0m[[0m[0mdebug[0m] [0m[0mNew invalidations:[0m
-[0m[[0m[0mdebug[0m] [0m[0m	CapteurVoie.GenererFlux[0m
-[0m[[0m[0mdebug[0m] [0m[0m	HubCentral.DemandeTrajet[0m
-[0m[[0m[0mdebug[0m] [0m[0m	CapteurVoie.ArriveeVehicule[0m
-[0m[[0m[0mdebug[0m] [0m[0m	CapteurVoie.FeuPasseAuVert[0m
-[0m[[0m[0mdebug[0m] [0m[0m	CarrefourMain[0m
-[0m[[0m[0mdebug[0m] [0m[0m	HubCentral.AvancerSequence[0m
-[0m[[0m[0mdebug[0m] [0m[0m	HubCentral[0m
-[0m[[0m[0mdebug[0m] [0m[0m	CapteurVoie.TraiterProchainVehicule[0m
-[0m[[0m[0mdebug[0m] [0m[0mInitial set of included nodes: CapteurVoie.GenererFlux, HubCentral.DemandeTrajet, CapteurVoie.ArriveeVehicule, CapteurVoie.FeuPasseAuVert, CarrefourMain, HubCentral.AvancerSequence, HubCentral, CapteurVoie.TraiterProchainVehicule[0m
-[0m[[0m[0mdebug[0m] [0m[0mIncluding CapteurVoie by HubCentral.DemandeTrajet[0m
+[0m[[0m[0mdebug[0m] [0m[0mInitial set of included nodes: [0m
+[0m[[0m[0mdebug[0m] [0m[0mPreviously invalidated, but (transitively) depend on new invalidations:[0m
+[0m[[0m[0mdebug[0m] [0m[0mFinal step, transitive dependencies:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Set()[0m
+[0m[[0m[0mdebug[0m] [0m[0mInitial set of included nodes: CapteurVoie.GenererFlux, HubCentral.HubCommand, HubCentral.DemandeTrajet, CapteurVoie.ArriveeVehicule, CapteurVoie.FeuPasseAuVert, HubCentral.EtatCarrefour, HubCentral.FinPassageTotal, HubCentral.AvancerSequence, CapteurVoie.FinChronoVert, CapteurVoie.Command, HubCentral, CapteurVoie, CapteurVoie.TraiterProchainVehicule[0m
+[0m[[0m[0mdebug[0m] [0m[0mIncluding CapteurVoie by HubCentral.HubCommand[0m
+[0m[[0m[0mdebug[0m] [0m[0mIncluding HubCentral.DemandeTrajet by CapteurVoie[0m
 [0m[[0m[0mdebug[0m] [0m[0mIncluding HubCentral by CapteurVoie[0m
 [0m[[0m[0mdebug[0m] [0m[0mIncluding CarrefourMain by HubCentral[0m
 [0m[[0m[0mdebug[0m] [0m[0mIncluding HubCentral.AvancerSequence by CapteurVoie[0m
-[0m[[0m[0mdebug[0m] [0m[0mPreviously invalidated, but (transitively) depend on new invalidations:[0m
-[0m[[0m[0mdebug[0m] [0m[0m	CapteurVoie[0m
-[0m[[0m[0mdebug[0m] [0m[0mFinal step, transitive dependencies:[0m
-[0m[[0m[0mdebug[0m] [0m[0m	Set(CapteurVoie.GenererFlux, HubCentral.DemandeTrajet, CapteurVoie.ArriveeVehicule, CapteurVoie.FeuPasseAuVert, CarrefourMain, HubCentral.AvancerSequence, HubCentral, CapteurVoie, CapteurVoie.TraiterProchainVehicule)[0m
-[0m[[0m[0mdebug[0m] [0m[0mInitial set of included nodes: CapteurVoie.GenererFlux, CapteurVoie.ArriveeVehicule, CapteurVoie.FeuPasseAuVert, CapteurVoie.FinChronoVert, CapteurVoie.Command, CapteurVoie, CapteurVoie.TraiterProchainVehicule[0m
-[0m[[0m[0mdebug[0m] [0m[0mIncluding HubCentral by CapteurVoie.FeuPasseAuVert[0m
-[0m[[0m[0mdebug[0m] [0m[0mIncluding CapteurVoie by HubCentral[0m
-[0m[[0m[0mdebug[0m] [0m[0mIncluding HubCentral.AvancerSequence by CapteurVoie[0m
-[0m[[0m[0mdebug[0m] [0m[0mIncluding HubCentral.DemandeTrajet by CapteurVoie[0m
-[0m[[0m[0mdebug[0m] [0m[0mIncluding CarrefourMain by CapteurVoie[0m
 [0m[[0m[0mdebug[0m] [0m[0mInvalidated macros due to upstream dependencies change: Set()[0m
-[0m[[0m[0mdebug[0m] [0m[0mInitial set of included nodes: CapteurVoie.GenererFlux, HubCentral.HubCommand, HubCentral.DemandeTrajet, CapteurVoie.ArriveeVehicule, CapteurVoie.FeuPasseAuVert, CarrefourMain, HubCentral.EtatCarrefour, HubCentral.FinPassageTotal, HubCentral.AvancerSequence, CapteurVoie.FinChronoVert, CapteurVoie.Command, HubCentral, CapteurVoie, CapteurVoie.TraiterProchainVehicule[0m
-[0m[[0m[0mdebug[0m] [0m[0mIncluding HubCentral.FinPassageTotal by HubCentral.HubCommand[0m
-[0m[[0m[0mdebug[0m] [0m[0mIncluding HubCentral.DemandeTrajet by HubCentral.HubCommand[0m
-[0m[[0m[0mdebug[0m] [0m[0mIncluding HubCentral.AvancerSequence by HubCentral.HubCommand[0m
-[0m[[0m[0mdebug[0m] [0m[0mIncluding CapteurVoie.TraiterProchainVehicule by CapteurVoie.Command[0m
-[0m[[0m[0mdebug[0m] [0m[0mRecompiling all sources: number of invalidated sources > 50.0 percent of all sources[0m
-[0m[[0m[0mdebug[0m] [0m[0mcompilation cycle 2[0m
-[0m[[0m[0minfo[0m] [0m[0mcompiling 4 Scala sources to C:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\target\scala-2.13\classes ...[0m
-[0m[[0m[0mdebug[0m] [0m[0mReturning already retrieved and compiled bridge: C:\Users\youne\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\scala-lang\scala2-sbt-bridge\2.13.12\scala2-sbt-bridge-2.13.12.jar.[0m
-[0m[[0m[0mdebug[0m] [0m[0m[zinc] Running cached compiler 1be1db56 for Scala compiler version 2.13.12[0m
-[0m[[0m[0mdebug[0m] [0m[0m[zinc] The Scala compiler is invoked with:[0m
-[0m[[0m[0mdebug[0m] [0m[0m	-classpath[0m
-[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\target\scala-2.13\classes;C:\Users\youne\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\scala-lang\scala-library\2.13.12\scala-library-2.13.12.jar;C:\Users\youne\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\com\typesafe\akka\akka-actor-typed_2.13\2.6.21\akka-actor-typed_2.13-2.6.21.jar;C:\Users\youne\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\com\typesafe\akka\akka-actor_2.13\2.6.21\akka-actor_2.13-2.6.21.jar;C:\Users\youne\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\com\typesafe\akka\akka-slf4j_2.13\2.6.21\akka-slf4j_2.13-2.6.21.jar;C:\Users\youne\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\slf4j\slf4j-api\1.7.36\slf4j-api-1.7.36.jar;C:\Users\youne\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\com\typesafe\config\1.4.2\config-1.4.2.jar;C:\Users\youne\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\scala-lang\modules\scala-java8-compat_2.13\1.0.0\scala-java8-compat_2.13-1.0.0.jar[0m
-[0m[[0m[0mdebug[0m] [0m[0mScala compilation took 0.7135568 s[0m
-[0m[[0m[0mdebug[0m] [0m[0mdone compiling[0m
+[0m[[0m[0mdebug[0m] [0m[0mNo classes were invalidated.[0m

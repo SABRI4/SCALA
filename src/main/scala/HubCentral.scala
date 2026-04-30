@@ -60,7 +60,7 @@ private def afficherCarrefour(etat: EtatCarrefour): Unit = {
     val bleu = "\u001b[34m"
 
     println(s"$bleu=====================================================$reset")
-    println(s"$bleu        MONITORING CARREFOUR CRITIQUE 2026           $reset")
+    println(s"$bleu         MONITORING CARREFOUR CRITIQUE 2026          $reset")
     println(s"$bleu=====================================================$reset")
     
     // 1. ÉTAT DES ZONES (CENTRE DU CARREFOUR)
@@ -75,32 +75,39 @@ private def afficherCarrefour(etat: EtatCarrefour): Unit = {
     }
     println("\n" + "-" * 53)
 
-    //DISPOSITION GÉOGRAPHIQUE DES VOIES
+    // 2. DISPOSITION GÉOGRAPHIQUE DES VOIES (Avec Directions)
     val groupes = List(
       ("NORD (v01-v03)", List(1, 2, 3)),
-      ("SUD  (v04-v06)", List(4, 5, 6)),
-      ("EST  (v07-v09)", List(7, 8, 9)),
+      ("EST  (v04-v06)", List(4, 5, 6)),
+      ("SUD  (v07-v09)", List(7, 8, 9)),
       ("OUEST(v10-v12)", List(10, 11, 12))
     )
 
     groupes.foreach { case (nom, ids) =>
       print(f"$nom%-15s : ")
       ids.foreach { id =>
+        // Calcul de la direction affichée
+        val dir = id % 3 match {
+          case 1 => "D"
+          case 2 => "DR"
+          case 0 => "G"
+        }
         val nb = etat.filesAttente.getOrElse(id, 0)
         val estAuVert = etat.reservations.values.exists(_ == id)
         val feu = if (estAuVert) s"$vert[V]$reset" else s"$rouge[R]$reset"
         val voitures = ">" * nb
-        print(f"v$id%02d$feu:$voitures%-6s  ")
+        // Formatage : vID[Direction][Feu]:Voitures
+        print(f"v$id%02d[$dir]$feu:$voitures%-6s  ")
       }
       println()
     }
 
     println("-" * 53)
 
-    // 3. LOG DE RÉSERVATION (POUR COMPRENDRE QUI BLOQUE QUI)
+    // 3. LOG DE RÉSERVATION
     println("RESERVATIONS ACTIVES :")
     val resActives = etat.reservations.filter(_._2 != 0)
-    if (resActives.isEmpty) println("Aucun vehicule engager.")
+    if (resActives.isEmpty) println("Aucun vehicule engage.")
     else {
       resActives.foreach { case (zone, voie) =>
         println(s"La Voie $voie occupe/reserve la Zone ${nomsZones(zone)}")
@@ -108,6 +115,6 @@ private def afficherCarrefour(etat: EtatCarrefour): Unit = {
     }
 
     println(s"$bleu=====================================================$reset")
-    println(">> [V] = Vert | [R] = Rouge | Stratégie : Onde Verte")
+    println(s">> [D]=Droite | [G]=Gauche | [DR]=Droit | Strategie: Fixe 10s")
   }
 }
