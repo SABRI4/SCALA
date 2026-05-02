@@ -4,7 +4,6 @@ import scala.concurrent.duration._
 
 object CapteurVoie {
 
-  // --- COMMANDES ---
   sealed trait Command
   case object ArriveeVehicule extends Command
   case object FeuPasseAuVert extends Command
@@ -12,8 +11,7 @@ object CapteurVoie {
   case object FinChronoVert extends Command 
   private case object GenererFlux extends Command
 
-  // --- LOGIQUE DE TRAJET FIXE ---
-  // Détermine la direction selon l'ID de la voie (1=D, 2=DR, 0=G)
+
   private def genererTrajetFixe(voieId: Int, zoneCible: String): List[String] = {
     val direction = voieId % 3 
 
@@ -35,27 +33,28 @@ object CapteurVoie {
     }
   }
 
-  // --- CONSTRUCTEUR (Setup) ---
+  //Le "constructeur" de notre acteur
   def apply(voieId: Int, zoneCible: String, hub: ActorRef[HubCentral.HubCommand]): Behavior[Command] = {
     Behaviors.setup { context =>
       Behaviors.withTimers { timers =>
-        // Initialisation de la file avec 0 à 2 véhicules au départ
+
         val fileInitiale = List.fill(scala.util.Random.nextInt(3))(genererTrajetFixe(voieId, zoneCible))
         
-        // Simulation du flux de trafic : une voiture arrive toutes les 5 à 12 secondes
+        // On fixe le fait qu'une voiture arrive toutes les 5 à 12 secondes
         timers.startTimerWithFixedDelay(GenererFlux, ArriveeVehicule, (5 + scala.util.Random.nextInt(7)).seconds)
 
         // Si la file n'est pas vide, on demande immédiatement le passage au Hub
         if (fileInitiale.nonEmpty) {
           hub ! HubCentral.DemandeTrajet(voieId, fileInitiale.head, fileInitiale.size, context.self)
         }
-
+        
+        //On recevra notre propre commande ici afin de gérer les voitures lors de l'instanciation de notre acteur
         gestionFile(voieId, zoneCible, fileInitiale, hub, timers, context, 0L) 
       }
     }
   }
 
-  // --- MACHINE À ÉTATS (Behavior) ---
+  // Gestion de l'arrivé des voitures (demandes d'accès etc...)
   private def gestionFile(
     voieId: Int, 
     zoneCible: String, 
@@ -68,29 +67,33 @@ object CapteurVoie {
 
     Behaviors.receiveMessage {
       case ArriveeVehicule =>
+        //création d'une nouvelle file avec la nouvelle voiture
         val nouvelleFile = file :+ genererTrajetFixe(voieId, zoneCible)
         // On informe le Hub pour mettre à jour l'affichage des ">"
         if (nouvelleFile.size == 1) {
           hub ! HubCentral.DemandeTrajet(voieId, nouvelleFile.head, nouvelleFile.size, context.self)
-        } else {
+        } 
+        else {
           hub ! HubCentral.DemandeTrajet(voieId, file.head, nouvelleFile.size, context.self)
         }
         gestionFile(voieId, zoneCible, nouvelleFile, hub, timers, context, debutVert)
 
       case FeuPasseAuVert =>
         if (file.nonEmpty) {
-          // Si c'est le début d'un nouveau cycle vert, on déclenche le chrono
+          // Si c'est le début d'un nouveau cycle de feu vert, on lance le chrono
           val nouveauDebut = if (debutVert == 0L) {
             val maintenant = System.currentTimeMillis()
             timers.startSingleTimer(FinChronoVert, 10.seconds)
             maintenant
           } else debutVert
 
-          // Temps de traversée de la zone (1.2 seconde)
-          timers.startSingleTimer(TraiterProchainVehicule, 1200.millis)
+          // 1s pour traversé une zone
+          timers.startSingleTimer(TraiterProchainVehicule, 1000.millis)
           gestionFile(voieId, zoneCible, file, hub, timers, context, nouveauDebut)
-        } else {
-          // Plus personne en file : on rend la main au Hub
+        } 
+        
+        else {
+          // Plus personne en file, on rend la main au Hub ducoup
           hub ! HubCentral.FinPassageTotal(voieId, zoneCible, 0)
           gestionFile(voieId, zoneCible, Nil, hub, timers, context, 0L)
         }
@@ -105,15 +108,16 @@ object CapteurVoie {
             // Le véhicule avance dans la zone suivante du carrefour
             hub ! HubCentral.AvancerSequence(voieId, zoneFinie, resteDuTrajet.head, context.self)
             gestionFile(voieId, zoneCible, resteDuTrajet :: file.tail, hub, timers, context, debutVert)
-          } else {
+          } 
+          
+          else {
             // Le véhicule vient de sortir du carrefour
             val fileApresSortie = file.tail
             val tempsEcoule = System.currentTimeMillis() - debutVert
             
-            // Logique de continuation (Onde verte) : 
             // On continue si la file n'est pas vide ET qu'il reste du temps sur les 10s
             if (fileApresSortie.nonEmpty && tempsEcoule < 10000) {
-              timers.startSingleTimer(FeuPasseAuVert, 400.millis) // Petit délai entre deux voitures
+              timers.startSingleTimer(FeuPasseAuVert, 400.millis) // Petit délai entre deux voitures afin de simuler
               gestionFile(voieId, zoneCible, fileApresSortie, hub, timers, context, debutVert)
             } else {
               // Fin du temps imparti ou file vide : passage au rouge
