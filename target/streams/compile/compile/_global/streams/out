@@ -1,7 +1,40 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:39:68: not found: value genererTrajet[0m
-[0m[[0m[31merror[0m] [0m[0m        val fileInitiale = List.fill(scala.util.Random.nextInt(3))(genererTrajet(zoneCible))[0m
-[0m[[0m[31merror[0m] [0m[0m                                                                   ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:66:36: not found: value genererTrajet[0m
-[0m[[0m[31merror[0m] [0m[0m        val nouvelleFile = file :+ genererTrajet(zoneCible)[0m
-[0m[[0m[31merror[0m] [0m[0m                                   ^[0m
-[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:22:84: not found: type Behavior[0m
+[0m[[0m[31merror[0m] [0m[0m  def apply(voieId: Int, zoneCible: String, hub: ActorRef[HubCentral.HubCommand]): Behavior[Command] = {[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                                   ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:22:50: not found: type ActorRef[0m
+[0m[[0m[31merror[0m] [0m[0m  def apply(voieId: Int, zoneCible: String, hub: ActorRef[HubCentral.HubCommand]): Behavior[Command] = {[0m
+[0m[[0m[31merror[0m] [0m[0m                                                 ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:23:5: not found: value Behaviors[0m
+[0m[[0m[31merror[0m] [0m[0m    Behaviors.setup { context =>[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:24:7: not found: value Behaviors[0m
+[0m[[0m[31merror[0m] [0m[0m      Behaviors.withTimers { timers =>[0m
+[0m[[0m[31merror[0m] [0m[0m      ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:34:110: not found: type Behavior[0m
+[0m[[0m[31merror[0m] [0m[0m                          timers: TimerScheduler[Command], context: ActorContext[Command], debutVert: Long): Behavior[Command] = {[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                                                             ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:33:90: not found: type ActorRef[0m
+[0m[[0m[31merror[0m] [0m[0m  private def gestionFile(voieId: Int, zoneCible: String, file: List[List[String]], hub: ActorRef[HubCentral.HubCommand],[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                                         ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:34:35: not found: type TimerScheduler[0m
+[0m[[0m[31merror[0m] [0m[0m                          timers: TimerScheduler[Command], context: ActorContext[Command], debutVert: Long): Behavior[Command] = {[0m
+[0m[[0m[31merror[0m] [0m[0m                                  ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:34:69: not found: type ActorContext[0m
+[0m[[0m[31merror[0m] [0m[0m                          timers: TimerScheduler[Command], context: ActorContext[Command], debutVert: Long): Behavior[Command] = {[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                    ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:36:5: not found: value Behaviors[0m
+[0m[[0m[31merror[0m] [0m[0m    Behaviors.receiveMessage {[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:39:9: not found: value Behaviors[0m
+[0m[[0m[31merror[0m] [0m[0m        Behaviors.same[0m
+[0m[[0m[31merror[0m] [0m[0m        ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:77:16: not found: value Behaviors[0m
+[0m[[0m[31merror[0m] [0m[0m        } else Behaviors.same[0m
+[0m[[0m[31merror[0m] [0m[0m               ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:80:13: not found: value message[0m
+[0m[[0m[31merror[0m] [0m[0m        if (message == GenererFlux) context.self ! ArriveeVehicule[0m
+[0m[[0m[31merror[0m] [0m[0m            ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:81:9: not found: value Behaviors[0m
+[0m[[0m[31merror[0m] [0m[0m        Behaviors.same[0m
+[0m[[0m[31merror[0m] [0m[0m        ^[0m
+[0m[[0m[31merror[0m] [0m[0m13 errors found[0m
