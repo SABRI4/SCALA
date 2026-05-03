@@ -45,7 +45,7 @@ private def gestionnaire(etat: EtatCarrefour): Behavior[HubCommand] = Behaviors.
 
       case VerifierSanteCapteurs =>
         etat.acteurs.values.foreach(_ ! CapteurVoie.PingSante(context.self))
-        
+        //Si pas de réponses après 30s, on considère que le capteur est en panne
         val uneVoieEstMorte = etat.derniereReponse.exists { case (_, last) => 
           (maintenant - last) > 30000 
         }
