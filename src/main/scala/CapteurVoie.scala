@@ -11,6 +11,7 @@ object CapteurVoie {
   case object FinChronoVert extends Command 
   case class PingPanne(replyTo: ActorRef[HubCentral.HubCommand]) extends Command
   private case object GenererFlux extends Command
+  case class PingSante(replyTo: ActorRef[HubCentral.HubCommand]) extends Command
 
   private def genererTrajetFixe(voieId: Int, zoneCible: String): List[String] = {
     val direction = voieId % 3 
@@ -45,8 +46,12 @@ object CapteurVoie {
 
     Behaviors.receiveMessage {
       case PingPanne(replyTo) =>
-        // Le capteur répond au Hub pour dire "Je suis vivant"
+        
         replyTo ! HubCentral.PongPanne(voieId)
+        Behaviors.same
+
+      case PingSante(replyTo) =>
+        replyTo ! HubCentral.PongSante(voieId)
         Behaviors.same
 
       case ArriveeVehicule =>
@@ -72,7 +77,6 @@ object CapteurVoie {
           val trajet = file.head
           val zoneFinie = trajet.head
           val reste = trajet.tail
-
           if (reste.nonEmpty) {
             hub ! HubCentral.AvancerSequence(voieId, zoneFinie, reste.head, context.self)
             gestionFile(voieId, zoneCible, reste :: file.tail, hub, timers, context, debutVert)
@@ -80,8 +84,10 @@ object CapteurVoie {
             val fileApres = file.tail
             val temps = System.currentTimeMillis() - debutVert
             if (fileApres.nonEmpty && temps < 10000) {
-              timers.startSingleTimer(FeuPasseAuVert, 400.millis)
-              gestionFile(voieId, zoneCible, fileApres, hub, timers, context, debutVert)
+                // AU LIEU DE : timers.startSingleTimer(FeuPasseAuVert, 400.millis)
+                // FAIS CECI :
+                hub ! HubCentral.DemandeTrajet(voieId, fileApres.head, fileApres.size, context.self)
+                gestionFile(voieId, zoneCible, fileApres, hub, timers, context, debutVert)
             } else {
               timers.cancel(FinChronoVert)
               hub ! HubCentral.FinPassageTotal(voieId, zoneFinie, fileApres.size)

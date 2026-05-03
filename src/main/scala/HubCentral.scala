@@ -1,5 +1,6 @@
 import akka.actor.typed.{ActorRef, Behavior}
 import akka.actor.typed.scaladsl.Behaviors
+import scala.concurrent.duration._
 
 object HubCentral {
 
@@ -8,82 +9,117 @@ object HubCentral {
   case class AvancerSequence(voieId: Int, zoneQuittee: String, zoneEntree: String, replyTo: ActorRef[CapteurVoie.Command]) extends HubCommand
   case class FinPassageTotal(voieId: Int, derniereZone: String, nbVehicules: Int) extends HubCommand
   case class PongPanne(voieId: Int) extends HubCommand
+  case object VerifierSanteCapteurs extends HubCommand
+  case class PongSante(voieId: Int) extends HubCommand
 
-  case class EtatCarrefour(
-    reservations: Map[String, Int], 
-    filesAttente: Map[Int, Int],
-    timestamps: Map[String, Long],
-    alerteOrange: Boolean = false
-  )
+case class EtatCarrefour(
+  reservations: Map[String, Int], 
+  filesAttente: Map[Int, Int],
+  timestamps: Map[String, Long],
+  derniereReponse: Map[Int, Long], //suivi de la vie des acteurs
+  acteurs: Map[Int, ActorRef[CapteurVoie.Command]], 
+  alerteOrange: Boolean = false
+)
 
-  def apply(): Behavior[HubCommand] = {
+def apply(): Behavior[HubCommand] = Behaviors.setup { context =>
+  Behaviors.withTimers { timers =>
+    // On lance le check toutes les 10s
+    timers.startTimerWithFixedDelay(VerifierSanteCapteurs, 10.seconds)
+    
     val etatInitial = EtatCarrefour(
       reservations = Map("1" -> 0, "2" -> 0, "3" -> 0, "4" -> 0), 
       filesAttente = (1 to 12).map(_ -> 0).toMap,
-      timestamps = Map("1" -> 0L, "2" -> 0L, "3" -> 0L, "4" -> 0L)
+      timestamps = Map("1" -> 0L, "2" -> 0L, "3" -> 0L, "4" -> 0L),
+      derniereReponse = (1 to 12).map(_ -> System.currentTimeMillis()).toMap,
+      acteurs = Map.empty
     )
     gestionnaire(etatInitial)
   }
+}
 
   private def gestionnaire(etat: EtatCarrefour): Behavior[HubCommand] = Behaviors.receive { (context, message) =>
-    val maintenant = System.currentTimeMillis()
-    var passageUrgence = false
-    val resVerifiees = etat.reservations.map { case (zone, occupant) =>
-      val debut = etat.timestamps.getOrElse(zone, 0L)
+  val maintenant = System.currentTimeMillis()
+
+  message match {
+    //handler de pannes si zones pas prises par les capteurs
+    case VerifierSanteCapteurs =>
+      // On ping tout le monde
+      etat.acteurs.values.foreach(_ ! CapteurVoie.PingSante(context.self))
       
-      if (occupant > 0 && (maintenant - debut > 30000)) {
-        val repondAuPing = scala.util.Random.nextInt(10) > 3
+      // On vérifie si un capteur ne répond pas depuis trop longtemps (plus de  12s)
+      val uneVoieEstMorte = etat.derniereReponse.exists { case (id, last) => 
+        (maintenant - last) > 12000 
+      }
 
-        if (!repondAuPing) {
-          println(s"!!! CRITIQUE : Voie $occupant ne répond plus. CONFISCATION ZONES !!!")
-          passageUrgence = true
+      if (uneVoieEstMorte && !etat.alerteOrange) {
+        val etatUrgence = etat.copy(
+          alerteOrange = true, 
+          reservations = etat.reservations.map(_._1 -> -1) // Verrouillage immédiat
+        )
+        afficherCarrefour(etatUrgence)
+        gestionnaire(etatUrgence)
+      } else {
+        Behaviors.same
+      }
+
+    case PongSante(id) =>
+      // Mise à jour du timestamp de vie
+      gestionnaire(etat.copy(derniereReponse = etat.derniereReponse + (id -> maintenant)))
+
+    //Handler de pannes si zones déjà prises par un capteur
+    case msgTrafic =>
+      var passageUrgenceInterne = false
+      val resVerifiees = etat.reservations.map { case (zone, occupant) =>
+        val debut = etat.timestamps.getOrElse(zone, 0L)
+        if (occupant > 0 && (maintenant - debut > 30000)) {
+          // Si une voiture bloque une zone + de 30s, on considère sa comme une panne
+          passageUrgenceInterne = true
           zone -> -1
-        } else {
-          println(s"ALERTE : Voie $occupant lente. Libération forcée de $zone.")
-          zone -> 0 // On libère simplement
-        }
-      } else zone -> occupant
-    }
+        } else zone -> occupant
+      }
 
-    // Si urgence, on verrouille tout  le carrefour
-    val nouvelEtatBase = if (passageUrgence || etat.alerteOrange) {
-      etat.copy(reservations = resVerifiees.map(_._1 -> -1), alerteOrange = true)
-    } else {
-      etat.copy(reservations = resVerifiees)
-    }
+      // Si alerte orange (nouvelle ou ancienne), on force l'état
+      val enAlerte = passageUrgenceInterne || etat.alerteOrange
+      val etatBaseModifie = if (enAlerte) {
+        etat.copy(reservations = resVerifiees.map(_._1 -> -1), alerteOrange = true)
+      } else {
+        etat.copy(reservations = resVerifiees)
+      }
 
-    val finalEtat = message match {
-      case PongPanne(id) => 
-        println(s"Info : Voie $id a confirmé être en vie.")
-        nouvelEtatBase
+      // Traitement des messages spécifiques de trafic
+      val finalEtat = msgTrafic match {
+        case DemandeTrajet(id, trajet, nb, replyTo) =>
+          // On enregistre la référence de l'acteur si on ne l'a pas encore (important pour le PingSante)
+          val nouveauxActeurs = etatBaseModifie.acteurs + (id -> replyTo)
+          val filesMaj = etatBaseModifie.filesAttente + (id -> nb)
+          
+          val possible = !etatBaseModifie.alerteOrange && trajet.forall(z => etatBaseModifie.reservations.getOrElse(z, 0) == 0)
+          
+          if (possible) {
+            val nouvellesRes = etatBaseModifie.reservations ++ trajet.map(_ -> id)
+            val nouveauxTimes = etatBaseModifie.timestamps ++ trajet.map(_ -> maintenant)
+            replyTo ! CapteurVoie.FeuPasseAuVert
+            etatBaseModifie.copy(reservations = nouvellesRes, filesAttente = filesMaj, timestamps = nouveauxTimes, acteurs = nouveauxActeurs)
+          } else {
+            etatBaseModifie.copy(filesAttente = filesMaj, acteurs = nouveauxActeurs)
+          }
 
-      case DemandeTrajet(id, trajet, nb, replyTo) =>
-        val filesMaj = nouvelEtatBase.filesAttente + (id -> nb)
-        // On refuse tout si alerte orange ou zones occupées
-        val possible = !nouvelEtatBase.alerteOrange && trajet.forall(z => nouvelEtatBase.reservations.getOrElse(z, 0) == 0)
-        
-        if (possible) {
-          val nouvellesRes = nouvelEtatBase.reservations ++ trajet.map(_ -> id)
-          val nouveauxTimes = nouvelEtatBase.timestamps ++ trajet.map(_ -> maintenant)
+        case AvancerSequence(id, quittee, entree, replyTo) =>
+          val nouvellesRes = etatBaseModifie.reservations + (quittee -> 0) + (entree -> id)
+          val nouveauxTimes = etatBaseModifie.timestamps + (entree -> maintenant)
           replyTo ! CapteurVoie.FeuPasseAuVert
-          nouvelEtatBase.copy(reservations = nouvellesRes, filesAttente = filesMaj, timestamps = nouveauxTimes)
-        } else {
-          nouvelEtatBase.copy(filesAttente = filesMaj)
-        }
+          etatBaseModifie.copy(reservations = nouvellesRes, timestamps = nouveauxTimes)
 
-      case AvancerSequence(id, quittee, entree, replyTo) =>
-        val nouvellesRes = nouvelEtatBase.reservations + (quittee -> 0) + (entree -> id)
-        val nouveauxTimes = nouvelEtatBase.timestamps + (entree -> maintenant)
-        replyTo ! CapteurVoie.FeuPasseAuVert
-        nouvelEtatBase.copy(reservations = nouvellesRes, timestamps = nouveauxTimes)
+        case FinPassageTotal(id, derniere, nb) =>
+          etatBaseModifie.copy(reservations = etatBaseModifie.reservations + (derniere -> 0), filesAttente = etatBaseModifie.filesAttente + (id -> nb))
 
-      case FinPassageTotal(id, derniere, nb) =>
-        nouvelEtatBase.copy(reservations = nouvelEtatBase.reservations + (derniere -> 0), filesAttente = nouvelEtatBase.filesAttente + (id -> nb))
-    }
+        case _ => etatBaseModifie // Pour les autres messages type PongPanne
+      }
 
-    afficherCarrefour(finalEtat)
-    gestionnaire(finalEtat)
+      afficherCarrefour(finalEtat)
+      gestionnaire(finalEtat)
   }
+}
 
  private def afficherCarrefour(etat: EtatCarrefour): Unit = {
     print("\u001b[2J\u001b[H") // Nettoyage de l'écran
@@ -170,9 +206,10 @@ object HubCentral {
     println(s"$bleu+${"-" * width}+$reset")
 
     if (etat.alerteOrange) {
-      println(s"$bleu|$reset" + padRight(f" $orange$gras/!\\ URGENCE : MODE SECURITE ACTIVE - TOUT EST BLOQUE /!\\$reset") + s"$bleu|$reset")
+      println(s"$bleu|$reset" + padRight(f" $orange$gras/!\\ PROTOCOLE DE SECURITE : PANNE MATERIELLE /!\\$reset") + s"$bleu|$reset")
+      println(s"$bleu|$reset" + padRight("   Les capteurs ne repondent plus. Passage au code de la route :") + s"$bleu|$reset")
     } else {
-      println(s"$bleu|$reset" + padRight(f" $cyan>> Strategie Active : Reservation Atomique (Watchdog 30s)$reset") + s"$bleu|$reset")
+      println(s"$bleu|$reset" + padRight(f" $cyan>> CARREFOUR INTELLIGENT : ON $reset") + s"$bleu|$reset")
     }
     println(s"$bleu+${"-" * width}+$reset")
   }
