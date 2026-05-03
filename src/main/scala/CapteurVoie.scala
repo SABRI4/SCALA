@@ -28,8 +28,8 @@ object CapteurVoie {
   def apply(voieId: Int, zoneCible: String, hub: ActorRef[HubCentral.HubCommand]): Behavior[Command] = {
     Behaviors.setup { context =>
       Behaviors.withTimers { timers =>
-        val fileInitiale = List.fill(scala.util.Random.nextInt(3))(genererTrajetFixe(voieId, zoneCible))
-        timers.startTimerWithFixedDelay(GenererFlux, ArriveeVehicule, (5 + scala.util.Random.nextInt(7)).seconds)
+        val fileInitiale = List.fill(scala.util.Random.nextInt(1))(genererTrajetFixe(voieId, zoneCible))
+        timers.startTimerWithFixedDelay(GenererFlux, ArriveeVehicule, (7 + scala.util.Random.nextInt(7)).seconds)
 
         if (fileInitiale.nonEmpty) {
           hub ! HubCentral.DemandeTrajet(voieId, fileInitiale.head, fileInitiale.size, context.self)
@@ -65,7 +65,7 @@ object CapteurVoie {
             timers.startSingleTimer(FinChronoVert, 10.seconds)
             System.currentTimeMillis()
           } else debutVert
-          timers.startSingleTimer(TraiterProchainVehicule, 1000.millis)
+          timers.startSingleTimer(TraiterProchainVehicule, 500.millis)
           gestionFile(voieId, zoneCible, file, hub, timers, context, nouveauDebut)
         } else {
           hub ! HubCentral.FinPassageTotal(voieId, zoneCible, 0)

@@ -1,6 +1,76 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\CapteurVoie.scala:92:21: type mismatch;[0m
-[0m[[0m[31merror[0m] [0m[0m found   : Unit[0m
-[0m[[0m[31merror[0m] [0m[0m required: akka.actor.typed.Behavior[CapteurVoie.Command][0m
-[0m[[0m[31merror[0m] [0m[0m                hub ! HubCentral.DemandeTrajet(voieId, fileApres.head, fileApres.size, context.self)[0m
-[0m[[0m[31merror[0m] [0m[0m                    ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:75:33: not found: value etatBaseModifie[0m
+[0m[[0m[31merror[0m] [0m[0m          val nouveauxActeurs = etatBaseModifie.acteurs + (id -> replyTo)[0m
+[0m[[0m[31merror[0m] [0m[0m                                ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:76:26: not found: value etatBaseModifie[0m
+[0m[[0m[31merror[0m] [0m[0m          val filesMaj = etatBaseModifie.filesAttente + (id -> nb)[0m
+[0m[[0m[31merror[0m] [0m[0m                         ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:78:27: not found: value etatBaseModifie[0m
+[0m[[0m[31merror[0m] [0m[0m          val possible = !etatBaseModifie.alerteOrange && trajet.forall(z => etatBaseModifie.reservations.getOrElse(z, 0) == 0)[0m
+[0m[[0m[31merror[0m] [0m[0m                          ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:78:78: not found: value etatBaseModifie[0m
+[0m[[0m[31merror[0m] [0m[0m          val possible = !etatBaseModifie.alerteOrange && trajet.forall(z => etatBaseModifie.reservations.getOrElse(z, 0) == 0)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                             ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:81:32: not found: value etatBaseModifie[0m
+[0m[[0m[31merror[0m] [0m[0m            val nouvellesRes = etatBaseModifie.reservations ++ trajet.map(_ -> id)[0m
+[0m[[0m[31merror[0m] [0m[0m                               ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:82:33: not found: value etatBaseModifie[0m
+[0m[[0m[31merror[0m] [0m[0m            val nouveauxTimes = etatBaseModifie.timestamps ++ trajet.map(_ -> maintenant)[0m
+[0m[[0m[31merror[0m] [0m[0m                                ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:84:13: not found: value etatBaseModifie[0m
+[0m[[0m[31merror[0m] [0m[0m            etatBaseModifie.copy(reservations = nouvellesRes, filesAttente = filesMaj, timestamps = nouveauxTimes, acteurs = nouveauxActeurs)[0m
+[0m[[0m[31merror[0m] [0m[0m            ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:84:34: not found: value reservations[0m
+[0m[[0m[31merror[0m] [0m[0m            etatBaseModifie.copy(reservations = nouvellesRes, filesAttente = filesMaj, timestamps = nouveauxTimes, acteurs = nouveauxActeurs)[0m
+[0m[[0m[31merror[0m] [0m[0m                                 ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:84:63: not found: value filesAttente[0m
+[0m[[0m[31merror[0m] [0m[0m            etatBaseModifie.copy(reservations = nouvellesRes, filesAttente = filesMaj, timestamps = nouveauxTimes, acteurs = nouveauxActeurs)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                              ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:84:88: not found: value timestamps[0m
+[0m[[0m[31merror[0m] [0m[0m            etatBaseModifie.copy(reservations = nouvellesRes, filesAttente = filesMaj, timestamps = nouveauxTimes, acteurs = nouveauxActeurs)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                                       ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:84:116: not found: value acteurs[0m
+[0m[[0m[31merror[0m] [0m[0m            etatBaseModifie.copy(reservations = nouvellesRes, filesAttente = filesMaj, timestamps = nouveauxTimes, acteurs = nouveauxActeurs)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                                                                   ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:86:13: not found: value etatBaseModifie[0m
+[0m[[0m[31merror[0m] [0m[0m            etatBaseModifie.copy(filesAttente = filesMaj, acteurs = nouveauxActeurs)[0m
+[0m[[0m[31merror[0m] [0m[0m            ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:86:34: not found: value filesAttente[0m
+[0m[[0m[31merror[0m] [0m[0m            etatBaseModifie.copy(filesAttente = filesMaj, acteurs = nouveauxActeurs)[0m
+[0m[[0m[31merror[0m] [0m[0m                                 ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:86:59: not found: value acteurs[0m
+[0m[[0m[31merror[0m] [0m[0m            etatBaseModifie.copy(filesAttente = filesMaj, acteurs = nouveauxActeurs)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                          ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:91:28: not found: value etatBaseModifie[0m
+[0m[[0m[31merror[0m] [0m[0m            val occupant = etatBaseModifie.reservations.getOrElse(entree, 0)[0m
+[0m[[0m[31merror[0m] [0m[0m                           ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:94:34: not found: value etatBaseModifie[0m
+[0m[[0m[31merror[0m] [0m[0m              val nouvellesRes = etatBaseModifie.reservations + (quittee -> 0) + (entree -> id)[0m
+[0m[[0m[31merror[0m] [0m[0m                                 ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:95:35: not found: value etatBaseModifie[0m
+[0m[[0m[31merror[0m] [0m[0m              val nouveauxTimes = etatBaseModifie.timestamps + (entree -> maintenant)[0m
+[0m[[0m[31merror[0m] [0m[0m                                  ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:97:15: not found: value etatBaseModifie[0m
+[0m[[0m[31merror[0m] [0m[0m              etatBaseModifie.copy(reservations = nouvellesRes, timestamps = nouveauxTimes)[0m
+[0m[[0m[31merror[0m] [0m[0m              ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:97:36: not found: value reservations[0m
+[0m[[0m[31merror[0m] [0m[0m              etatBaseModifie.copy(reservations = nouvellesRes, timestamps = nouveauxTimes)[0m
+[0m[[0m[31merror[0m] [0m[0m                                   ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:97:65: not found: value timestamps[0m
+[0m[[0m[31merror[0m] [0m[0m              etatBaseModifie.copy(reservations = nouvellesRes, timestamps = nouveauxTimes)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:100:15: not found: value etatBaseModifie[0m
+[0m[[0m[31merror[0m] [0m[0m              etatBaseModifie[0m
+[0m[[0m[31merror[0m] [0m[0m              ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:103:11: not found: value etatBaseModifie[0m
+[0m[[0m[31merror[0m] [0m[0m          etatBaseModifie.copy(reservations = etatBaseModifie.reservations + (derniere -> 0), filesAttente = etatBaseModifie.filesAttente + (id -> nb))[0m
+[0m[[0m[31merror[0m] [0m[0m          ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:103:32: not found: value reservations[0m
+[0m[[0m[31merror[0m] [0m[0m          etatBaseModifie.copy(reservations = etatBaseModifie.reservations + (derniere -> 0), filesAttente = etatBaseModifie.filesAttente + (id -> nb))[0m
+[0m[[0m[31merror[0m] [0m[0m                               ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:103:95: not found: value filesAttente[0m
+[0m[[0m[31merror[0m] [0m[0m          etatBaseModifie.copy(reservations = etatBaseModifie.reservations + (derniere -> 0), filesAttente = etatBaseModifie.filesAttente + (id -> nb))[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                                              ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\youne\Documents\cours\Info\ING2\Scala\Projet\src\main\scala\HubCentral.scala:105:19: not found: value etatBaseModifie[0m
+[0m[[0m[31merror[0m] [0m[0m        case _ => etatBaseModifie // Pour les autres messages type PongPanne[0m
+[0m[[0m[31merror[0m] [0m[0m                  ^[0m
+[0m[[0m[31merror[0m] [0m[0m25 errors found[0m

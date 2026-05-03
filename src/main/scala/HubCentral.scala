@@ -37,100 +37,88 @@ def apply(): Behavior[HubCommand] = Behaviors.setup { context =>
   }
 }
 
-  private def gestionnaire(etat: EtatCarrefour): Behavior[HubCommand] = Behaviors.receive { (context, message) =>
-  val maintenant = System.currentTimeMillis()
+private def gestionnaire(etat: EtatCarrefour): Behavior[HubCommand] = Behaviors.receive { (context, message) =>
+    val maintenant = System.currentTimeMillis()
 
-  message match {
-    //handler de pannes si zones pas prises par les capteurs
-    case VerifierSanteCapteurs =>
-      // On ping tout le monde
-      etat.acteurs.values.foreach(_ ! CapteurVoie.PingSante(context.self))
-      
-      // On vérifie si un capteur ne répond pas depuis trop longtemps (plus de  12s)
-      val uneVoieEstMorte = etat.derniereReponse.exists { case (id, last) => 
-        (maintenant - last) > 12000 
-      }
+    message match {
+      //Surveillance de l'état des capteurs (toutes les 10s ici)
 
-      if (uneVoieEstMorte && !etat.alerteOrange) {
-        val etatUrgence = etat.copy(
-          alerteOrange = true, 
-          reservations = etat.reservations.map(_._1 -> -1) // Verrouillage immédiat
-        )
-        afficherCarrefour(etatUrgence)
-        gestionnaire(etatUrgence)
-      } else {
-        Behaviors.same
-      }
+      case VerifierSanteCapteurs =>
+        etat.acteurs.values.foreach(_ ! CapteurVoie.PingSante(context.self))
+        
+        val uneVoieEstMorte = etat.derniereReponse.exists { case (_, last) => 
+          (maintenant - last) > 30000 
+        }
 
-    case PongSante(id) =>
-      // Mise à jour du timestamp de vie
-      gestionnaire(etat.copy(derniereReponse = etat.derniereReponse + (id -> maintenant)))
+        if (uneVoieEstMorte && !etat.alerteOrange) {
+          val etatUrgence = etat.copy(
+            alerteOrange = true, 
+            reservations = etat.reservations.map { case (zone, _) => zone -> -1 }
+          )
+          afficherCarrefour(etatUrgence)
+          gestionnaire(etatUrgence)
+        } else {
+          Behaviors.same
+        }
 
-    //Handler de pannes si zones déjà prises par un capteur
-    case msgTrafic =>
-      var passageUrgenceInterne = false
-      val resVerifiees = etat.reservations.map { case (zone, occupant) =>
-        val debut = etat.timestamps.getOrElse(zone, 0L)
-        if (occupant > 0 && (maintenant - debut > 30000)) {
-          // Si une voiture bloque une zone + de 30s, on considère sa comme une panne
-          passageUrgenceInterne = true
-          zone -> -1
-        } else zone -> occupant
-      }
+      case PongSante(id) =>
+        gestionnaire(etat.copy(derniereReponse = etat.derniereReponse + (id -> maintenant)))
 
-      // Si alerte orange (nouvelle ou ancienne), on force l'état
-      val enAlerte = passageUrgenceInterne || etat.alerteOrange
-      val etatBaseModifie = if (enAlerte) {
-        etat.copy(reservations = resVerifiees.map(_._1 -> -1), alerteOrange = true)
-      } else {
-        etat.copy(reservations = resVerifiees)
-      }
+      // 2. Gestion du trafic
+      case msgTrafic =>
+        val finalEtat = msgTrafic match {
+          case DemandeTrajet(id, trajet, nb, replyTo) =>
+            val nouveauxActeurs = etat.acteurs + (id -> replyTo)
+            val filesMaj = etat.filesAttente + (id -> nb)
+            
+            // Vérification : zones libres (0) et pas d'alerte
+            val possible = !etat.alerteOrange && trajet.forall(z => etat.reservations.getOrElse(z, 0) == 0)
+            
+            if (possible) {
+              val nouvellesRes = etat.reservations ++ trajet.map(_ -> id)
+              val nouveauxTimes = etat.timestamps ++ trajet.map(_ -> maintenant)
+              replyTo ! CapteurVoie.FeuPasseAuVert
+              etat.copy(reservations = nouvellesRes, filesAttente = filesMaj, timestamps = nouveauxTimes, acteurs = nouveauxActeurs)
+            } else {
+              etat.copy(filesAttente = filesMaj, acteurs = nouveauxActeurs)
+            }
 
-      // Traitement des messages spécifiques de trafic
-      val finalEtat = msgTrafic match {
-        case DemandeTrajet(id, trajet, nb, replyTo) =>
-          // On enregistre la référence de l'acteur si on ne l'a pas encore (important pour le PingSante)
-          val nouveauxActeurs = etatBaseModifie.acteurs + (id -> replyTo)
-          val filesMaj = etatBaseModifie.filesAttente + (id -> nb)
-          
-          val possible = !etatBaseModifie.alerteOrange && trajet.forall(z => etatBaseModifie.reservations.getOrElse(z, 0) == 0)
-          
-          if (possible) {
-            val nouvellesRes = etatBaseModifie.reservations ++ trajet.map(_ -> id)
-            val nouveauxTimes = etatBaseModifie.timestamps ++ trajet.map(_ -> maintenant)
-            replyTo ! CapteurVoie.FeuPasseAuVert
-            etatBaseModifie.copy(reservations = nouvellesRes, filesAttente = filesMaj, timestamps = nouveauxTimes, acteurs = nouveauxActeurs)
-          } else {
-            etatBaseModifie.copy(filesAttente = filesMaj, acteurs = nouveauxActeurs)
-          }
+          case AvancerSequence(id, quittee, entree, replyTo) =>
+            val occupant = etat.reservations.getOrElse(entree, 0)
+            
+            // On avance si c'est libre (0) ou si c'est notre réservation (id)
+            if (occupant == 0 || occupant == id) { 
+              val nouvellesRes = etat.reservations + (quittee -> 0) + (entree -> id)
+              val nouveauxTimes = etat.timestamps + (entree -> maintenant)
+              replyTo ! CapteurVoie.FeuPasseAuVert
+              etat.copy(reservations = nouvellesRes, timestamps = nouveauxTimes)
+            } else {
+              etat
+            }
 
-        case AvancerSequence(id, quittee, entree, replyTo) =>
-          val nouvellesRes = etatBaseModifie.reservations + (quittee -> 0) + (entree -> id)
-          val nouveauxTimes = etatBaseModifie.timestamps + (entree -> maintenant)
-          replyTo ! CapteurVoie.FeuPasseAuVert
-          etatBaseModifie.copy(reservations = nouvellesRes, timestamps = nouveauxTimes)
+          case FinPassageTotal(id, derniere, nb) =>
+            etat.copy(
+              reservations = etat.reservations + (derniere -> 0), 
+              filesAttente = etat.filesAttente + (id -> nb)
+            )
 
-        case FinPassageTotal(id, derniere, nb) =>
-          etatBaseModifie.copy(reservations = etatBaseModifie.reservations + (derniere -> 0), filesAttente = etatBaseModifie.filesAttente + (id -> nb))
+          case _ => etat 
+        }
 
-        case _ => etatBaseModifie // Pour les autres messages type PongPanne
-      }
-
-      afficherCarrefour(finalEtat)
-      gestionnaire(finalEtat)
+        afficherCarrefour(finalEtat)
+        gestionnaire(finalEtat)
+    }
   }
-}
 
- private def afficherCarrefour(etat: EtatCarrefour): Unit = {
+private def afficherCarrefour(etat: EtatCarrefour): Unit = {
     print("\u001b[2J\u001b[H") // Nettoyage de l'écran
 
     val vert = "\u001b[32m"; val rouge = "\u001b[31m"; val orange = "\u001b[33m"
     val bleu = "\u001b[34m"; val cyan = "\u001b[36m"; val reset = "\u001b[0m"
     val gras = "\u001b[1m"
 
-    val width = 76 // Largeur fixe du tableau pour un alignement parfait
+    val width = 76
 
-    // Fonction magique pour aligner la bordure droite sans être cassé par les codes couleurs ANSI
     def padRight(s: String): String = {
       val lengthWithoutColors = s.replaceAll("\u001b\\[[;\\d]*m", "").length
       s + " " * math.max(0, width - lengthWithoutColors)
@@ -140,17 +128,17 @@ def apply(): Behavior[HubCommand] = Behaviors.setup { context =>
     println(s"$bleu|$reset" + padRight(s"$gras$cyan   CARREFOUR INTELLIGENT  $reset") + s"$bleu|$reset")
     println(s"$bleu+${"-" * width}+$reset")
 
-    // --- LÉGENDE POUR LE JURY / PROF ---
     println(s"$bleu|$reset" + padRight(s" $gras[ LEGENDE DE LECTURE ]$reset") + s"$bleu|$reset")
-    println(s"$bleu|$reset" + padRight("   Feux       : [V] Vert (Passe) | [R] Rouge (Attend) | [O] Panne/Verrou") + s"$bleu|$reset")
+    println(s"$bleu|$reset" + padRight("   Feux       : [V] Vert (Passe) | [R] Rouge (Attend) | [O] Panne Système") + s"$bleu|$reset")
     println(s"$bleu|$reset" + padRight("   Directions : D = Droite | DR = Tout Droit | G = Gauche") + s"$bleu|$reset")
     println(s"$bleu|$reset" + padRight("   Trafic     : '>' = 1 Voiture en attente (Max 5 affichees)") + s"$bleu|$reset")
     println(s"$bleu+${"-" * width}+$reset")
 
-    // --- ZONES CENTRALES ---
+    //ZONES CARREFOUR
     val nomsZones = Map("1" -> "NO", "2" -> "NE", "3" -> "SO", "4" -> "SE")
     val zonesStr = List("2", "1", "3", "4").map { id =>
       val v = etat.reservations.getOrElse(id, 0)
+      // Ici le orange n'apparaît que si le Hub force le verrouillage (-1)
       val (color, label) = if (v == -1) (orange, "BLOQUE") else if (v > 0) (rouge, f"V$v%02d   ") else (vert, "LIBRE ")
       f"[$gras${nomsZones(id)}$reset:$color$label$reset]"
     }.mkString("   ")
@@ -159,7 +147,6 @@ def apply(): Behavior[HubCommand] = Behaviors.setup { context =>
     println(s"$bleu|$reset" + padRight(f"   $zonesStr") + s"$bleu|$reset")
     println(s"$bleu+${"-" * width}+$reset")
 
-    // --- VOIES ET TRAFIC ---
     println(s"$bleu|$reset" + padRight(f" $gras[ ETAT DES VOIES ET FILES D'ATTENTE ]$reset") + s"$bleu|$reset")
     val maintenant = System.currentTimeMillis()
     val groupes = List(("NORD ", 1 to 3), ("EST  ", 4 to 6), ("SUD  ", 7 to 9), ("OUEST", 10 to 12))
@@ -170,17 +157,15 @@ def apply(): Behavior[HubCommand] = Behaviors.setup { context =>
         val dir = id % 3 match { case 1 => "D " ; case 2 => "DR"; case _ => "G " }
         val nb = etat.filesAttente.getOrElse(id, 0)
         val estAuVert = etat.reservations.values.exists(_ == id)
-        val aUnProb = etat.reservations.exists { case (z, occ) => occ == id && (maintenant - etat.timestamps.getOrElse(z, 0L) > 30000) }
 
-        val feu = if (etat.alerteOrange || aUnProb) s"$orange[O]$reset" else if (estAuVert) s"$vert[V]$reset" else s"$rouge[R]$reset"
-        
-        // --- LOGIQUE DE L'AFFICHAGE DU TRAFIC ---
+        // MODIFICATION : On a supprimé 'aUnProb'. Le feu n'est orange que si 'alerteOrange' est vrai (panne capteur)
+        val feu = if (etat.alerteOrange) s"$orange[O]$reset" else if (estAuVert) s"$vert[V]$reset" else s"$rouge[R]$reset"
+      
         val nbChevrons = if (nb > 5) 5 else nb
         val chevrons = ">" * nbChevrons
         val compteur = if (nb > 5) f"(+$nb%d)" else ""
-        val infoTrafic = s"$chevrons$compteur" // On fusionne les deux ici
-        
-        // On utilise %-11s pour que l'espace total (chevrons + chiffre) soit toujours de 11 caractères
+        val infoTrafic = s"$chevrons$compteur" 
+      
         ligneVoie += f"v$id%02d$feu$dir:$infoTrafic%-11s "
       }
       println(s"$bleu|$reset" + padRight(ligneVoie) + s"$bleu|$reset")
@@ -196,10 +181,10 @@ def apply(): Behavior[HubCommand] = Behaviors.setup { context =>
       resActives.foreach { case (zone, voie) =>
         val duree = (maintenant - etat.timestamps.getOrElse(zone, 0L)) / 1000
         if (voie == -1) {
-          println(s"$bleu|$reset" + padRight(f"   -> $orange/!\\ SYSTEME : Zone ${nomsZones(zone)} VERROUILLEE (Panne detectee)$reset") + s"$bleu|$reset")
+          println(s"$bleu|$reset" + padRight(f"   -> $orange/!\\ SYSTEME : Zone ${nomsZones(zone)} VERROUILLEE$reset") + s"$bleu|$reset")
         } else {
-          val alerte = if (duree > 15) s"$orange(Attention: Lent)$reset" else ""
-          println(s"$bleu|$reset" + padRight(f"   -> Voiture de la Voie $voie%02d traverse ${nomsZones(zone)} depuis $duree sec $alerte") + s"$bleu|$reset")
+          // MODIFICATION : suppression du texte "(Attention: Lent)"
+          println(s"$bleu|$reset" + padRight(f"   -> Voiture de la Voie $voie%02d traverse ${nomsZones(zone)} depuis $duree s") + s"$bleu|$reset")
         }
       }
     }
@@ -207,7 +192,7 @@ def apply(): Behavior[HubCommand] = Behaviors.setup { context =>
 
     if (etat.alerteOrange) {
       println(s"$bleu|$reset" + padRight(f" $orange$gras/!\\ PROTOCOLE DE SECURITE : PANNE MATERIELLE /!\\$reset") + s"$bleu|$reset")
-      println(s"$bleu|$reset" + padRight("   Les capteurs ne repondent plus. Passage au code de la route :") + s"$bleu|$reset")
+      println(s"$bleu|$reset" + padRight("   Les capteurs ne repondent plus. Passage au code de la route.") + s"$bleu|$reset")
     } else {
       println(s"$bleu|$reset" + padRight(f" $cyan>> CARREFOUR INTELLIGENT : ON $reset") + s"$bleu|$reset")
     }
