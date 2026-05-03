@@ -88,7 +88,7 @@ object CapteurVoie {
           val fileApres = file.tail
           val temps = System.currentTimeMillis() - debutVert
 
-          //ON LIBÈRE SYSTÉMATIQUEMENT LA ZONE
+          //Libération de la zone si on n'en a plus besoin pour notre trajet
           hub ! HubCentral.FinPassageTotal(voieId, zoneFinie, fileApres.size)
 
           if (fileApres.nonEmpty && temps < 10000) {
@@ -103,6 +103,7 @@ object CapteurVoie {
         }
       } else Behaviors.same
 
+      // On remet le compteur a 0 soit feu rouge meme si il y a encore des véhicules sur la voie associé au capteur
       case FinChronoVert => gestionFile(voieId, zoneCible, file, hub, timers, context, 0L)
       case GenererFlux => context.self ! ArriveeVehicule; Behaviors.same
     }
