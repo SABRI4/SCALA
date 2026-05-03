@@ -84,8 +84,6 @@ object CapteurVoie {
             val fileApres = file.tail
             val temps = System.currentTimeMillis() - debutVert
             if (fileApres.nonEmpty && temps < 10000) {
-                // AU LIEU DE : timers.startSingleTimer(FeuPasseAuVert, 400.millis)
-                // FAIS CECI :
                 hub ! HubCentral.DemandeTrajet(voieId, fileApres.head, fileApres.size, context.self)
                 gestionFile(voieId, zoneCible, fileApres, hub, timers, context, debutVert)
             } else {
