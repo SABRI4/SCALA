@@ -79,18 +79,18 @@ object CapteurVoie {
         val reste = trajet.tail
 
         if (reste.nonEmpty) {
-          // La voiture avance dans sa séquence (elle ne quitte pas le carrefour)
+          // La voiture avance dans sa séquence (elle ne quitte pas le carrefour pour le moment)
           hub ! HubCentral.AvancerSequence(voieId, zoneFinie, reste.head, context.self)
           gestionFile(voieId, zoneCible, reste :: file.tail, hub, timers, context, debutVert)
-        } else {
-          // LA VOITURE A FINI SON TRAJET COMPLET
+        } 
+        else {
+          // La voiture a finit son trajet complet
           val fileApres = file.tail
           val temps = System.currentTimeMillis() - debutVert
 
-          // --- ON LIBÈRE SYSTÉMATIQUEMENT LA ZONE ---
+          //ON LIBÈRE SYSTÉMATIQUEMENT LA ZONE
           hub ! HubCentral.FinPassageTotal(voieId, zoneFinie, fileApres.size)
 
-          // Maintenant on voit si on lance la suivante
           if (fileApres.nonEmpty && temps < 10000) {
             // On demande pour la suivante, mais la zone précédente est déjà libre !
             hub ! HubCentral.DemandeTrajet(voieId, fileApres.head, fileApres.size, context.self)
@@ -103,7 +103,7 @@ object CapteurVoie {
         }
       } else Behaviors.same
 
-      case FinChronoVert => Behaviors.same
+      case FinChronoVert => gestionFile(voieId, zoneCible, file, hub, timers, context, 0L)
       case GenererFlux => context.self ! ArriveeVehicule; Behaviors.same
     }
   }
