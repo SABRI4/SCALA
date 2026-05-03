@@ -65,35 +65,43 @@ object CapteurVoie {
             timers.startSingleTimer(FinChronoVert, 10.seconds)
             System.currentTimeMillis()
           } else debutVert
-          timers.startSingleTimer(TraiterProchainVehicule, 500.millis)
+          timers.startSingleTimer(TraiterProchainVehicule, 100.millis)
           gestionFile(voieId, zoneCible, file, hub, timers, context, nouveauDebut)
         } else {
           hub ! HubCentral.FinPassageTotal(voieId, zoneCible, 0)
           gestionFile(voieId, zoneCible, Nil, hub, timers, context, 0L)
         }
 
-      case TraiterProchainVehicule =>
-        if (file.nonEmpty) {
-          val trajet = file.head
-          val zoneFinie = trajet.head
-          val reste = trajet.tail
-          if (reste.nonEmpty) {
-            hub ! HubCentral.AvancerSequence(voieId, zoneFinie, reste.head, context.self)
-            gestionFile(voieId, zoneCible, reste :: file.tail, hub, timers, context, debutVert)
+    case TraiterProchainVehicule =>
+      if (file.nonEmpty) {
+        val trajet = file.head
+        val zoneFinie = trajet.head
+        val reste = trajet.tail
+
+        if (reste.nonEmpty) {
+          // La voiture avance dans sa séquence (elle ne quitte pas le carrefour)
+          hub ! HubCentral.AvancerSequence(voieId, zoneFinie, reste.head, context.self)
+          gestionFile(voieId, zoneCible, reste :: file.tail, hub, timers, context, debutVert)
+        } else {
+          // LA VOITURE A FINI SON TRAJET COMPLET
+          val fileApres = file.tail
+          val temps = System.currentTimeMillis() - debutVert
+
+          // --- ON LIBÈRE SYSTÉMATIQUEMENT LA ZONE ---
+          hub ! HubCentral.FinPassageTotal(voieId, zoneFinie, fileApres.size)
+
+          // Maintenant on voit si on lance la suivante
+          if (fileApres.nonEmpty && temps < 10000) {
+            // On demande pour la suivante, mais la zone précédente est déjà libre !
+            hub ! HubCentral.DemandeTrajet(voieId, fileApres.head, fileApres.size, context.self)
+            gestionFile(voieId, zoneCible, fileApres, hub, timers, context, debutVert)
           } else {
-            val fileApres = file.tail
-            val temps = System.currentTimeMillis() - debutVert
-            if (fileApres.nonEmpty && temps < 10000) {
-                hub ! HubCentral.DemandeTrajet(voieId, fileApres.head, fileApres.size, context.self)
-                gestionFile(voieId, zoneCible, fileApres, hub, timers, context, debutVert)
-            } else {
-              timers.cancel(FinChronoVert)
-              hub ! HubCentral.FinPassageTotal(voieId, zoneFinie, fileApres.size)
-              if (fileApres.nonEmpty) hub ! HubCentral.DemandeTrajet(voieId, fileApres.head, fileApres.size, context.self)
-              gestionFile(voieId, zoneCible, fileApres, hub, timers, context, 0L)
-            }
+            // On a fini notre temps de parole ou plus de voitures
+            timers.cancel(FinChronoVert)
+            gestionFile(voieId, zoneCible, fileApres, hub, timers, context, 0L)
           }
-        } else Behaviors.same
+        }
+      } else Behaviors.same
 
       case FinChronoVert => Behaviors.same
       case GenererFlux => context.self ! ArriveeVehicule; Behaviors.same
